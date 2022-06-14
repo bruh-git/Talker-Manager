@@ -7,18 +7,18 @@ app.use(bodyParser.json());
 const HTTP_OK_STATUS = 200;
 const PORT = '3000';
 
-const geraStringAleatoria = (tamanho) => {
-  let stringAleatoria = '';
+const randomToken = (length) => {
+  let randomString = '';
   const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < tamanho; i += 1) {
-      stringAleatoria += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+  for (let i = 0; i < length; i += 1) {
+    randomString += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
   }
-  return stringAleatoria;
+  return randomString;
 };
 
 const validateAuthorization = (_req, res, next) => {
   /* const { authorization } = req.headers; */
-  const token = geraStringAleatoria(16);
+  const token = randomToken(16);
   
 /* if (authorization !== token) return res.status(401).json([]); */
 
@@ -85,10 +85,10 @@ app.post('/login', validateAuthorization, (req, res) => {
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   const regEmail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-  if (email === '') return res.status(401).json({ message: `O campo ${email} é obrigatório` });
-  if (email !== regEmail) return res.status(401).json({ message: `O ${email}deve ter o formato "email@email.com"` });
-  if (password === '') return res.status(401).json({ message: `O campo ${password} é obrigatório` });
-  if (password.length < 6) return res.status(401).json({ message: `O ${password}deve ter pelo menos 6 caracteres` });
+  if (email === '') return res.status(400).json({ message: `O campo ${email} é obrigatório` });
+  if (email !== regEmail) return res.status(400).json({ message: `O ${email}deve ter o formato "email@email.com"` });
+  if (password === '') return res.status(400).json({ message: `O campo ${password} é obrigatório` });
+  if (password.length < 6) return res.status(400).json({ message: `O ${password}deve ter pelo menos 6 caracteres` });
 });
 
 // Requisio 5
