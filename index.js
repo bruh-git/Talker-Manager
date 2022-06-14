@@ -42,12 +42,14 @@ fs.readFileSync('./talker.json');
 
 const talker = require('./talker');
 
+// Requisito 1
 app.get('/talker', (_req, res) => {
   if (!talker) return res.status(200).json([]);
 
   res.status(200).json(talker);
 });
 
+// Requisito 2
 app.get('/talker/:id', (req, res) => {
 const { id } = req.params;
 const talkerIndex = talker.find((t) => t.id === Number(id));
@@ -55,13 +57,14 @@ if (!talkerIndex) return res.status(404).json({ message: 'Pessoa palestrante nã
 res.status(200).json(talkerIndex);
 });
 
-app.use(validateAuthorization);
+// Requisito 3
+/* app.use(validateAuthorization); */
 /* const validUser = {
   email: 'email@email.com',
   password: '123456',
 }; */
 
-app.post('/login', (req, res) => {
+app.post('/login', validateAuthorization, (req, res) => {
   const { email, password } = req.body;
 
 /*   if (!email || !password) {
@@ -77,10 +80,22 @@ app.post('/login', (req, res) => {
   res.status(200).json(validateAuthorization);
   });
 
+// Requisito 4
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  const regEmail = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+  if (email === '') return res.status(401).json({ message: `O campo ${email} é obrigatório` });
+  if (email !== regEmail) return res.status(401).json({ message: `O ${email}deve ter o formato "email@email.com"` });
+  if (password === '') return res.status(401).json({ message: `O campo ${password} é obrigatório` });
+  if (password.length < 6) return res.status(401).json({ message: `O ${password}deve ter pelo menos 6 caracteres` });
+});
+
+// Requisio 5
 app.post('/talker', (req, res) => {
     const { authorization } = req.headers;
     const { name, age, talk } = req.body;
-    const { watchedAt,rate } = talk;
+    const { watchedAt, rate } = talk;
     const token = authorization;
     const regex = /^[0-9]{2}[\/][0-9]{2}[\/][0-9]{4}$/g;
   if (token === '') return res.status(401).json({ message: 'Token não encontrado' });
