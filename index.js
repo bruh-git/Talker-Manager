@@ -25,11 +25,11 @@ const randomToken = (length) => {
   return randomString;
 };
 
-const validateAuthorization = (_req, res, next) => {
-  /* const { authorization } = req.headers; */
+const validateAuthorization = (req, res, next) => {
+  const { authorization } = req.headers;
   const token = randomToken(16);
   
-/* if (authorization !== token) return res.status(401).json([]); */
+if (authorization !== token) return res.status(401).json([]);
   res.status(200).json(`token: ${token}`);
   next();
 };
@@ -61,13 +61,15 @@ const validatePasseword = (req, res, next) => {
   next();
 };
 
+// Requisito 5
+
 const validateToken = (req, res, next) => {
   const { authorization } = req.headers;
   const token = authorization;
+  const tokenLength = randomToken(16);
 
   if (token === '') return res.status(401).json({ message: 'Token não encontrado' });
-  if (token.length !== 16) return res.status(401).json({ message: 'Token inválido' });
-    res.status(200).json({ message: 'Valid Token!' });
+  if (tokenLength.length !== 16) return res.status(401).json({ message: 'Token inválido' });
 
   next();
 };
@@ -78,7 +80,7 @@ const validateName = (req, res, next) => {
   if (name.length === '') {
     return res.status(400).json({ message: `O ${name} é deve ter pelo menos 3 caracteres` });
   }
-  if (name.length !== 3) return res.status(400).json({ message: `O campo ${name} é obrigatório` });
+  if (name.length < 3) return res.status(400).json({ message: `O campo ${name} é obrigatório` });
 
   next();
 };
@@ -173,9 +175,9 @@ app.post('/login', validateAuthorization, validateEmail, validatePasseword, (req
   });
 
 // Requisio 5
-app.post('/talker', validateToken,
+app.post('/talker', validateAuthorization, validateToken,
 validateName, validateAge,
 validateTalk, validateWatchedAt,
 validateWatchedAt, validateRate, (_req, res) => {
-    res.status(201).json(talker);
+  res.status(200).json({ message: 'Valid Token!' });
   });
