@@ -45,7 +45,7 @@ res.status(200).json(talkerIndex);
 
 app.post('/login', isValidEmail, isValidPassword, (_req, res) => {
   const token = randomToken(16);
-  res.status(200).json(`token: ${token}`);
+  res.status(200).json({ token });
   });
 
 // Requisio 5
