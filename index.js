@@ -99,9 +99,13 @@ authValidate, async (req, res) => {
 // Requisito 8
 app.get('/talker/search', authValidate, async (req, res) => {
   const { name } = req.query;
-  const talker = await readContentFile(PATH_FILE) || [];
 
-  const filteredTalkers = talker.filter((t) => t.name.includes(name));
+  const talkers = JSON.parse(await fs.readFile(PATH_FILE, 'utf8') || []);
+
+  if (name === '' || !name) return res.status(200).json(talkers);
+
+  const filteredTalkers = talkers.filter((talker) => talker.name.includes(name));
+  if (!filteredTalkers) return res.status(200).json(talkers);
 
   res.status(200).json(filteredTalkers);
   });
