@@ -35,7 +35,7 @@ app.get('/talker', async (_req, res) => {
 // Requisito 2
 app.get('/talker/:id', async (req, res) => {
 const { id } = req.params;
-const content = await fs.readFile('./talker.json');
+const content = await fs.readFile(PATH_FILE);
 const talker = JSON.parse(content);
 const talkerIndex = talker.find((t) => t.id === Number(id));
 if (!talkerIndex) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
@@ -56,7 +56,7 @@ validateAge, validateTalk,
 validateRate, validateWatchedAt, async (req, res) => {
   const { name, age, talk } = req.body;
 
-const talker = JSON.parse(await fs.readFile('./talker.json'));
+const talker = JSON.parse(await fs.readFile(PATH_FILE));
 
 const talkers = { name, age, id: talker.length + 1, talk };
 talker.push(talkers);
@@ -74,7 +74,7 @@ validateAge, validateTalk,
 validateRate, validateWatchedAt, async (req, res) => {
   const { name, age, talk } = req.body;
   const { id } = req.params;
-  const talker = JSON.parse(await fs.readFile('./talker.json'));
+  const talker = JSON.parse(await fs.readFile(PATH_FILE));
 
   const talkerIndex = await talker.findIndex((t) => t.id === Number(id));
 
@@ -88,10 +88,20 @@ validateRate, validateWatchedAt, async (req, res) => {
 app.delete('/talker/:id',
 authValidate, async (req, res) => {
   const { id } = req.params;
-  const talkers = JSON.parse(await fs.readFile('./talker.json'));
+  const talkers = JSON.parse(await fs.readFile(PATH_FILE));
 
   const deleteIndex = await talkers.findIndex((t) => t.id === Number(id));
 
   fs.writeFile('talker.json', JSON.stringify(deleteIndex));
   res.status(204).end();
+  });
+
+// Requisito 8
+app.get('/talker/search', authValidate, async (req, res) => {
+  const { name } = req.query;
+  const talker = await readContentFile(PATH_FILE) || [];
+
+  const filteredTalkers = talker.filter((t) => t.name.includes(name));
+
+  res.status(200).json(filteredTalkers);
   });
