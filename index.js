@@ -55,9 +55,11 @@ validateAge, validateTalk,
 validateRate, validateWatchedAt, async (req, res) => {
   const { name, age, talk } = req.body;
 
-  const talkers = { name, age, talk };
+const talker = JSON.parse(await fs.readFile('./talker.json'));
 
-  await writeContentFile(talkers);
+const talkers = talker.push({ name, age, id: talker.length + 1, talk });
 
-  res.status(201).json(talkers);
+  await writeContentFile('/talker', talkers);
+
+  res.status(201).json(talker[4]);
   });
