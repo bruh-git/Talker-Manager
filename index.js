@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs').promises;
 const { readContentFile } = require('./helpers/readWriteFile');
+const randomToken = require('./helpers/randomToken');
+const { isValidEmail, isValidPassword } = require('./middlewares/validations');
 
 const app = express();
 app.use(bodyParser.json());
@@ -19,7 +21,6 @@ app.listen(PORT, () => {
 });
 
 // Requisito 1
-
 const PATH_FILE = './talker.json';
 
 app.get('/talker', async (_req, res) => {
@@ -39,27 +40,11 @@ res.status(200).json(talkerIndex);
 });
 
 // Requisito 3
-/* app.use(validateAuthorization); */
-/* const validUser = {
-  email: 'email@email.com',
-  password: '123456',
-}; */
 
-/* app.post('/login', validateAuthorization, validateEmail, validatePasseword, (req, res) => {
-  const { email, password } = req.body; */
-
-/*   if (!email || !password) {
-    return res.status(401).json({ message: 'email or password can`t be blank!' });
-  }
-
-  if (email !== validUser.email || password !== validUser.password) {
-    return res.status(401).json({ message: 'Invalid credentials!' });
-  } */
-/*   if (!email || !password) {
-    return res.status(401).json({ message: 'email or password can`t be blank!' });
-  }
-  res.status(200).json(validateAuthorization);
-  }); */
+app.post('/login', isValidEmail, isValidPassword, (_req, res) => {
+  const token = randomToken(16);
+  return res.status(200).json({ token });
+  });
 
 // Requisio 5
 /* app.post('/talker', validateAuthorization, validateToken,

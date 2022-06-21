@@ -1,4 +1,4 @@
-const randomToken = require('../utils/randomToken');
+const randomToken = require('../helpers/randomToken');
 
 const isValidEmail = (req, res, next) => {
   const { email } = req.body;
