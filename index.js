@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs').promises;
-const { readContentFile, writeContentFile } = require('./helpers/readWriteFile');
+const { readContentFile } = require('./helpers/readWriteFile');
 const randomToken = require('./helpers/randomToken');
 const { isValidEmail, isValidPassword, authValidate,
   validateName, validateAge, validateTalk,
@@ -26,9 +26,9 @@ app.listen(PORT, () => {
 const PATH_FILE = './talker.json';
 
 app.get('/talker', async (_req, res) => {
-  const teams = await readContentFile(PATH_FILE) || [];
+  const talker = await readContentFile(PATH_FILE) || [];
 
-  res.status(200).json(teams);
+  res.status(200).json(talker);
 });
 
 // Requisito 2
@@ -57,9 +57,11 @@ validateRate, validateWatchedAt, async (req, res) => {
 
 const talker = JSON.parse(await fs.readFile('./talker.json'));
 
-const talkers = talker.push({ name, age, id: talker.length + 1, talk });
+const talkers = { name, age, id: talker.length + 1, talk };
+talker.push(talkers);
 
-  await writeContentFile('/talker', talkers);
+  /* await writeContentFile('/talker.json', talker); */
+  fs.writeFile('talker.json', JSON.stringify(talker));
 
-  res.status(201).json(talker[4]);
+  res.status(201).json(talkers);
   });
