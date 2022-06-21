@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs').promises;
@@ -81,4 +82,16 @@ validateRate, validateWatchedAt, async (req, res) => {
 
   fs.writeFile('talker.json', JSON.stringify(talker));
   res.status(200).json(talker[talkerIndex]);
+  });
+
+// Requisio 7
+app.delete('/talker/:id',
+authValidate, async (req, res) => {
+  const { id } = req.params;
+  const talkers = JSON.parse(await fs.readFile('./talker.json'));
+
+  const deleteIndex = await talkers.findIndex((t) => t.id === Number(id));
+
+  fs.writeFile('talker.json', JSON.stringify(deleteIndex));
+  res.status(204).end();
   });
