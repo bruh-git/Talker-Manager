@@ -32,6 +32,19 @@ app.get('/talker', async (_req, res) => {
   res.status(200).json(talker);
 });
 
+// Requisito 8
+app.get('/talker/search', authValidate, async (req, res) => {
+  const { q: name } = req.query;
+
+  const talkers = JSON.parse(await fs.readFile(PATH_FILE, 'utf8') || []);
+
+  if (!name) return res.status(200).json(talkers);
+
+  const filteredTalkers = talkers.filter((talker) => talker.name.includes(name));
+
+  res.status(200).json(filteredTalkers);
+  });
+
 // Requisito 2
 app.get('/talker/:id', async (req, res) => {
 const { id } = req.params;
@@ -94,18 +107,4 @@ authValidate, async (req, res) => {
 
   fs.writeFile('talker.json', JSON.stringify(deleteIndex));
   res.status(204).end();
-  });
-
-// Requisito 8
-app.get('/talker/search', authValidate, async (req, res) => {
-  const { name } = req.query;
-
-  const talkers = JSON.parse(await fs.readFile(PATH_FILE, 'utf8') || []);
-
-  if (name === '' || !name) return res.status(200).json(talkers);
-
-  const filteredTalkers = talkers.filter((talker) => talker.name.includes(name));
-  if (!filteredTalkers) return res.status(200).json(talkers);
-
-  res.status(200).json(filteredTalkers);
   });
