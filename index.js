@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs').promises;
-const { readContentFile } = require('./helpers/readWriteFile');
+const { readContentFile, writeContentFile } = require('./helpers/readWriteFile');
 const randomToken = require('./helpers/randomToken');
-const { isValidEmail, isValidPassword } = require('./middlewares/validations');
+const { isValidEmail, isValidPassword, authValidate,
+  validateName, validateAge, validateTalk,
+  validateWatchedAt, validateRate } = require('./middlewares/validations');
 
 const app = express();
 app.use(bodyParser.json());
@@ -47,9 +49,15 @@ app.post('/login', isValidEmail, isValidPassword, (_req, res) => {
   });
 
 // Requisio 5
-/* app.post('/talker', validateAuthorization, validateToken,
-validateName, validateAge,
-validateTalk, validateWatchedAt,
-validateWatchedAt, validateRate, (_req, res) => {
-  res.status(200).json({ message: 'Valid Token!' });
-  }); */
+app.post('/talker',
+authValidate, validateName,
+validateAge, validateTalk,
+validateRate, validateWatchedAt, async (req, res) => {
+  const { name, age, talk } = req.body;
+
+  const talkers = { name, age, talk };
+
+  await writeContentFile(talkers);
+
+  res.status(201).json(talkers);
+  });

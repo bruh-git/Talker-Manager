@@ -1,5 +1,3 @@
-const randomToken = require('../helpers/randomToken');
-
 const isValidEmail = (req, res, next) => {
   const { email } = req.body;
 
@@ -25,24 +23,18 @@ const isValidPassword = (req, res, next) => {
   next();
 };
 
-const validateAuthorization = (req, res, next) => {
+const authValidate = (req, res, next) => {
   const { authorization } = req.headers;
-  const token = randomToken(16);
-  
-if (authorization !== token) return res.status(401).json([]);
-  res.status(200).json(`token: ${token}`);
-  next();
-};
 
-const validateToken = (req, res, next) => {
-  const { authorization } = req.headers;
-  const token = authorization;
-  const tokenLength = randomToken(16);
+  if (!authorization) {
+    return res.status(401).json({ message: 'Token não encontrado' });
+  }
 
-  if (token === '') return res.status(401).json({ message: 'Token não encontrado' });
-  if (tokenLength.length !== 16) return res.status(401).json({ message: 'Token inválido' });
+  if (authorization.length !== 16) {
+    return res.status(401).json({ message: 'Token inválido' });
+  }
 
-  next();
+  return next();
 };
 
 const validateName = (req, res, next) => {
@@ -79,13 +71,13 @@ const validateTalk = (req, res, next) => {
 };
 
 const validateWatchedAt = (req, res, next) => {
-  const { watchedAt } = req.body.talk;
-  const regex = /^[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/g;
+  const { talk: { watchedAt } } = req.body;
+  const regex = /^\d{2}\/\d{2}\/\d{4}$/;
 
-  if (watchedAt === '') {
+  if (!watchedAt) {
     return res.status(400).json({ message: 'O campo "watchedAt" é obrigatório' });
   }
-  if (watchedAt !== regex) {
+  if (!regex.test(watchedAt)) {
     return res.status(400)
     .json({ message: 'O campo "watchedAt" deve ter o formato "dd/mm/aaaa"' });
   }
@@ -107,8 +99,7 @@ const validateRate = (req, res, next) => {
 module.exports = {
   isValidEmail,
   isValidPassword,
-  validateAuthorization,
-  validateToken,
+  authValidate,
   validateName,
   validateAge,
   validateTalk,
