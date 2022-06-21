@@ -65,3 +65,18 @@ talker.push(talkers);
 
   res.status(201).json(talkers);
   });
+
+// Requisio 6
+app.put('/talker/:id',
+authValidate, validateName,
+validateAge, validateTalk,
+validateRate, validateWatchedAt, async (req, res) => {
+  const { id } = req.params;
+  const { name, age, talk } = req.body;
+  const talker = JSON.parse(await fs.readFile('./talker.json'));
+
+  const talkerIndex = talker.find((t) => t.id === Number(id));
+
+  talker[talkerIndex] = { ...talker[talkerIndex], name, age, talk };
+  res.status(200).json(talker);
+  });
