@@ -28,7 +28,7 @@ const PATH_FILE = './talker.json';
 app.get('/talker', async (_req, res) => {
   const teams = await readContentFile(PATH_FILE) || [];
 
-  res.status(200).json({ teams });
+  res.status(200).json(teams);
 });
 
 // Requisito 2
